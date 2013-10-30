@@ -6,6 +6,7 @@
  */
 
 #include "server_namespace.h"
+#include "common/common_api.h"
 #include "connection.h"
 #include "player.h"
 #include "frame_mem_mgt.h"
@@ -105,6 +106,56 @@ int32_t CConnection::MakeMessage()
 			}
 
 			//m_nRoleID = stMsgHead.nRoleID;
+			MsgEventInfo * arrPMsgEventInfo[MAX_MSGEVENT_COUNT] = {NULL};
+			int32_t nEventCount = 0;
+			nRet = g_FrameMsgEventMgt.GetMessageEvent(stMsgHead.nMessageID, arrPMsgEventInfo, nEventCount);
+			if ((nRet < 0) || (nEventCount <= 0))
+			{
+//				WRITE_MAIN_LOG(enmLogLevel_Warning, "it's not found msg hander!{msgid=0x%08x}\n", stMsgHead.nMessageID);
+//				FREE((uint8_t *)m_pPacket);
+//				m_pPacket = NULL;
+//				m_nPacketOffset = 0;
+//				m_nCurPacketSize = 0;
+//				return ret;
+			}
+
+			for (int32_t i = 0; i < nEventCount; i++)
+			{
+				//»ñÈ¡IMsgBody
+				IMsgBody *pMsgBody = g_MessageMapDecl.GetMessageBody(stMsgHead.nMessageID);
+				if(NULL == pMsgBody)
+				{
+					//WRITE_MAIN_LOG(enmLogLevel_Warning, "it's not found msg body!{msgid=0x%08x}\n", stMsgHead.nMessageID);
+					continue;
+				}
+
+				nRet = pMsgBody->MessageDecode(pPacketHead, m_nPacketOffset, nOffset);
+				if( 0 > nRet)
+				{
+					//WRITE_MAIN_LOG(enmLogLevel_Error, "decode msg body failed!{ret=0x%08x, msgid=0x%08x}\n", ret, stMsgHead.nMessageID);
+					continue;
+				}
+
+				if(stMsgHead.nMessageID == 18)
+				{
+					char arrTimeString[1024];
+					GetTimeString(arrTimeString);
+
+					uint32_t offset = 0;
+					char szLog[enmMaxLogInfoLength];
+					szLog[0] = 0;
+
+					sprintf(szLog + offset, "{RecvTime : %s} MessageHeadCS=", arrTimeString);
+					offset = (uint32_t)strlen(szLog);
+					stMsgHead.Dump(szLog, enmMaxLogInfoLength, offset);
+
+					sprintf(szLog + offset, " MessageBody=");
+					offset = (uint32_t)strlen(szLog);
+					pMsgBody->Dump(szLog + offset, enmMaxLogInfoLength, offset);
+
+					WRITE_MAIN_LOG(enmLogLevel_Notice, "%s\n", szLog);
+				}
+			}
 
 			ConnInfo *pConnInfo = new(&m_pPacket->m_pNetPacket[0]) ConnInfo;
 			pConnInfo->pSocket = this;

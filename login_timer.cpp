@@ -21,7 +21,7 @@ int32_t CLoginTimer::OnTimerEvent(CFrameTimer* pTimer)
 	//char arrAddress[] = "10.10.9.113";
 	//uint16_t nPort = 1135;
 
-	int32_t nUserCount = 1 + Random(29);
+	int32_t nUserCount = 1 + Random(49);
 
 	for(int32_t i = 0; i < nUserCount; ++i)
 	{

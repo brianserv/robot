@@ -21,7 +21,7 @@ int32_t CInitTimer::OnTimerEvent(CFrameTimer* pTimer)
 
 	int32_t ret = S_OK;
 
-	for(int i = 200; i < 300; ++i)
+	for(int i = 1; i < 200; ++i)
 	{
 		CPlayer *pPlayer = g_PlayerMgt.pop_obj();
 		if(pPlayer == NULL)
@@ -44,7 +44,7 @@ int32_t CInitTimer::OnTimerEvent(CFrameTimer* pTimer)
 
 	int32_t nTimerIndex = enmInvalidTimerIndex;
 	ret = g_Frame.CreateTimer(static_cast<TimerProc>(&CLoginTimer::OnTimerEvent),
-			&(GET_LOGINTIMER_INSTANCE()), NULL, 1000 * US_PER_MS, true, nTimerIndex);
+			&(GET_LOGINTIMER_INSTANCE()), NULL, 3000 * US_PER_MS, true, nTimerIndex);
 	if (ret < 0)
 	{
 		return ret;

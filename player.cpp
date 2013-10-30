@@ -7,11 +7,11 @@
 
 #include "server_namespace.h"
 #include "common/common_errordef.h"
+#include "common/common_api.h"
 #include "player.h"
 #include "frame_netthread.cpp"
 #include "main_frame.h"
 #include "message_define.h"
-#include "common_func.h"
 #include "data_mgt.h"
 
 
@@ -282,7 +282,7 @@ int32_t CPlayer::LoginGameReq()
 	int32_t ret = SendMessage(&stMsgHead, &stLoginGameReq);
 
 	ret = g_Frame.CreateTimer(static_cast<TimerProc>(&CPlayer::OnLoginTimeout),
-			this, NULL, 5 * US_PER_SECOND, false, m_nLoginTimerIndex);
+			this, NULL, 300 * US_PER_SECOND, false, m_nLoginTimerIndex);
 	if (ret < 0)
 	{
 		WRITE_DEBUG_LOG("create logintimeout timer failed, user[%s] logout!", m_strUserName.GetString());
@@ -437,10 +437,10 @@ int32_t CPlayer::WorldChatReq(char *arrChat)
 
 	int32_t ret = SendMessage(&stMsgHead, &stReq);
 
-	char arrTimeString[MAX_FORMAT_TIMESTRING_LEN];
-	GetTimeString(arrTimeString);
+//	char arrTimeString[MAX_FORMAT_TIMESTRING_LEN];
+//	GetTimeString(arrTimeString);
 
-	WRITE_DEBUG_LOG("userid[%d] send worldchat[%s] at %s", m_nUserID, arrChat, arrTimeString);
+//	WRITE_DEBUG_LOG("userid[%d] send worldchat[%s] at %s", m_nUserID, arrChat, arrTimeString);
 
 	return ret;
 }
@@ -458,11 +458,11 @@ int32_t CPlayer::WorldChatResp(MessageHeadCS *pMsgHead, IMsgBody *pMsgBody)
 		return E_UNKNOWN;
 	}
 
-	char arrTimeString[MAX_FORMAT_TIMESTRING_LEN];
-	GetTimeString(arrTimeString);
+//	char arrTimeString[MAX_FORMAT_TIMESTRING_LEN];
+//	GetTimeString(arrTimeString);
 
-	WRITE_DEBUG_LOG("userid[%d] recv worldchat[%s] at %s", m_nUserID,
-			pResp->m_strChatContent.GetString(), arrTimeString);
+//	WRITE_DEBUG_LOG("userid[%d] recv worldchat[%s] at %s", m_nUserID,
+//			pResp->m_strChatContent.GetString(), arrTimeString);
 
 	return S_OK;
 }
